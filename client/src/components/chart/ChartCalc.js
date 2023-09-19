@@ -11,15 +11,21 @@ import {
   Title,
   Tooltip,
   Legend,
+  PointElement,
+  LineElement,
+  Filler
 } from 'chart.js';
-import { Chart, Bar } from 'react-chartjs-2';
+import { Chart, Bar, Line } from 'react-chartjs-2';
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  PointElement,
+  LineElement,
+  Filler
 );
 // To get this to work properly, you need to have your api running
 // There should be an express api attached to this project in /api
@@ -38,12 +44,12 @@ function ChartCalc(props) {
       },
       title: {
         display: true,
-        text: 'Chart.js Bar Chart',
+        text: 'Population by Week',
       },
     },
   };
 
-  const labels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7 '];
+  const labels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'];
 
   let data = {
     labels,
@@ -63,19 +69,23 @@ function ChartCalc(props) {
   //   },
   // ],
 
-  const chartColors = ['rgba(178, 147, 125, .75)','rgba(118, 159, 181, .75)','rgba(129, 161, 138, .75)','rgba(255, 99, 132, 0.75)'];
+  const chartColors = {'Wolf Spider':'rgba(178, 147, 125, .75)','Cricket':'rgba(118, 159, 181, .75)','Aphid':'rgba(129, 161, 138, .75)','Milkweed':'rgba(255, 99, 132, 0.75)'};
 
   const prepareChartData = () => {
       if(chartData?.length){
         let newData = [];
         for(let i = 0; i<chartData?.length; i++){
             let row = chartData[i];
-            let dataSet = {
-              label:row.life_form,
-              data: [row.w1,row.w2,row.w3,row.w4,row.w5,row.w6,row.w7],
-              backgroundColor: chartColors[i]
+            if(row.type==='population'){
+              let dataSet = {
+                label:row.life_form,
+                data: [row.w1,row.w2,row.w3,row.w4,row.w5,row.w6,row.w7],
+                backgroundColor: chartColors[row.life_form],
+                fill: true
+              }
+              newData.push(dataSet);
             }
-            newData.push(dataSet);
+
         }
         setPreparedData(newData);
       }
@@ -91,7 +101,7 @@ function ChartCalc(props) {
   <>
       <h3>Chart - Sample</h3>
       <p className="App-intro">Made with React Chart.js. Data is from a Redux store shared with the Calculation Grid below.</p>
-      <Bar options={options} data={data} />
+      <Line options={options} data={data} />
   </>
   );
 }
